@@ -107,7 +107,7 @@ public class Client
         client.listenForMessage();
         client.sendMessage();
         }
-        catch(UnknownHostException u)
+        catch(Exception e)
         {
             System.out.println("hell");
         }
