@@ -1,4 +1,3 @@
-import javax.imageio.IIOException;
 import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
@@ -98,18 +97,20 @@ public class Client
     public static void main(String args[])
     {
         try
-        {
-        System.out.println("Enter your username for the chat: ");
-        Scanner sc = new Scanner(System.in);
-        String username = sc.nextLine();
-        Socket socket = new Socket("localhost" , 5000);
-        Client client = new Client(socket,username);
-        client.listenForMessage();
-        client.sendMessage();
+        {   Socket socket = new Socket("localhost" , 5000);
+            System.out.println("Enter your username for the chat: ");
+            Scanner sc = new Scanner(System.in);
+            String username = sc.nextLine();
+            Client client = new Client(socket,username);
+            System.out.println("Joined Chat-Room");
+            client.listenForMessage();
+            client.sendMessage();
+            sc.close();
         }
         catch(Exception e)
         {
-            System.out.println("hell");
+            System.out.println("Coundnt Establish Connection with Server...");
+            System.out.println("Exiting...");
         }
     }
 }
