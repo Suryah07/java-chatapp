@@ -5,7 +5,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-class clientlayout extends JFrame implements ActionListener
+/*class clientlayout extends JFrame implements ActionListener
 {
     Container a;
     JButton msgsend;
@@ -14,11 +14,16 @@ class clientlayout extends JFrame implements ActionListener
     JTextArea tmessages;
     JTextField sendmsg;
     JLabel sendlabel;
+    String msg;
+    String username;
+    BufferedWriter bufferWriter;
+    Socket socket;
 
 
-    public clientlayout()
+    public clientlayout(Socket s,String uname)
     {
-
+        username = uname;
+        socket = s;
         setTitle("Chat app");
         setBounds(300,90,1000,600);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -34,6 +39,8 @@ class clientlayout extends JFrame implements ActionListener
         tmessages = new JTextArea();
         tmessages.setSize(500,300);
         tmessages.setLocation(100,100);
+        tmessages.setEditable(false);
+        //JScrollPane scrolll = new JScrollPane(tmessages);
         a.add(tmessages);
 
         msgsend = new JButton("Send");
@@ -55,10 +62,7 @@ class clientlayout extends JFrame implements ActionListener
         setVisible(true);  
     }
 
-    public void writemsg(String msg)
-    {
-
-    }
+    
 
     public void actionPerformed(ActionEvent e)
     {
@@ -68,54 +72,97 @@ class clientlayout extends JFrame implements ActionListener
         }
 
     }
-}
 
-public class Client
+}*/
+
+public class Client extends JFrame implements ActionListener
 {
     private Socket socket;
     private BufferedReader bufferReader;
     private BufferedWriter bufferWriter;
     private String username;
-    clientlayout cl = new clientlayout();
+    Container a;
+    JButton msgsend;
+    JTextArea tmsgsend;
+    JLabel messages;
+    JTextArea tmessages;
+    JTextField sendmsg;
+    JLabel sendlabel;
+    String msg;
+    
 
     public Client(Socket socket,String username)
     {
         try
         {
-
             this.socket = socket;
             this.bufferWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             this.bufferReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            this.username = username;
-            
+            this.username = username;   
         }
         catch(IOException e)
         {
             System.out.println("Client client closing everytjing");
             closeEverything(socket,bufferReader,bufferWriter);
         }
+        setTitle("Chat app");
+        setBounds(300,90,1000,600);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setResizable(false);
+        a = getContentPane();
+        a.setVisible(true);
+        a.setLayout(null);
+        messages = new JLabel("Messages");
+        messages.setSize(300,30);
+        messages.setLocation(100,55);
+        a.add(messages);
+
+        tmessages = new JTextArea();
+        tmessages.setSize(500,300);
+        tmessages.setLocation(100,100);
+        tmessages.setEditable(false);
+        //JScrollPane scrolll = new JScrollPane(tmessages);
+        a.add(tmessages);
+
+        msgsend = new JButton("Send");
+        msgsend.setSize(100,30);
+        msgsend.setLocation(500,450);
+        a.add(msgsend);
+        msgsend.addActionListener(this);
+
+        sendlabel = new JLabel("Send");
+        sendlabel.setSize(300,30);
+        sendlabel.setLocation(100,420);
+        a.add(sendlabel);
+
+        sendmsg = new JTextField();
+        sendmsg.setSize(400,30);
+        sendmsg.setLocation(100,450);
+        a.add(sendmsg);
+            
+        setVisible(true);  
     }
+   
 
-    
-
-    public void sendMessage()
+    public void sendMessage(String msg)
     {
         try
         {
+            
             bufferWriter.write(username);
             bufferWriter.newLine();
             bufferWriter.flush();
 
-            Scanner sc = new Scanner(System.in);
-            while(socket.isConnected())
-            {
+            //Scanner sc = new Scanner(System.in);
+            //while(socket.isConnected())
+            //{
                 //clientlayout cl = new clientlayout();
-                String messageToSend = sc.nextLine();
-                bufferWriter.write(username + ":" +messageToSend);
+                String messageToSend = msg;
+                bufferWriter.write(username + ": " +messageToSend);
                 bufferWriter.newLine();
                 bufferWriter.flush();
-            }
-            sc.close();
+            //}
+            //sc.close();
         }
         catch(IOException e)
         {
@@ -136,7 +183,8 @@ public class Client
                    try
                    {
                        msgFromGroupChat = bufferReader.readLine();
-                       System.out.println(msgFromGroupChat);
+                       //System.out.println(msgFromGroupChat);
+                       writemsg(msgFromGroupChat);
                    }
                    catch(IOException e)
                    {
@@ -171,6 +219,22 @@ public class Client
         {
             e.printStackTrace();
         }
+
+        
+    }
+
+    public void writemsg(String msg)
+    {
+        tmessages.setText(tmessages.getText()+"\n" + msg); 
+    }
+
+    public void actionPerformed(ActionEvent e)
+    {
+        if(e.getSource()==msgsend)
+        {
+            String msg = sendmsg.getText();
+            sendMessage(msg);                
+        }
     }
 
     public static void main(String args[])
@@ -188,7 +252,7 @@ public class Client
             Client client = new Client(socket,username);
             System.out.println("Joined Chat-Room");
             client.listenForMessage();
-            client.sendMessage();
+            //client.sendMessage();
             sc.close();
         }
         catch(Exception e)
