@@ -1,4 +1,8 @@
 {
     "java.project.sourcePaths": ["src"],
-    "java.project.outputPath": "bin"
+    "java.project.outputPath": "bin",
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "d:\\PROGRAMMING\\JAVA\\database java\\derby database\\db-derby-10.15.2.0-bin\\db-derby-10.15.2.0-bin\\lib\\derby.jar"
+    ]
 }
