@@ -19,6 +19,8 @@ public class Client extends JFrame implements ActionListener
     JTextField sendmsg;
     JLabel sendlabel;
     String msg;
+    Font font = new Font("Times New Roman", Font.PLAIN, 20);
+    Font tfont = new Font("Times New Roman", Font.PLAIN, 18);
     
 
     public Client(Socket socket,String username)
@@ -46,7 +48,10 @@ public class Client extends JFrame implements ActionListener
         a = getContentPane();
         a.setVisible(true);
         a.setLayout(null);
+
+
         messages = new JLabel("Messages");
+        messages.setFont(font);
         messages.setSize(300,30);
         messages.setLocation(100,55);
         a.add(messages);
@@ -54,18 +59,25 @@ public class Client extends JFrame implements ActionListener
         tmessages = new JTextArea();
         tmessages.setSize(500,300);
         tmessages.setLocation(100,100);
+        tmessages.setFont(tfont);
         tmessages.setEditable(false);
-        //JScrollPane scrolll = new JScrollPane(tmessages);
-        a.add(tmessages);
+        JScrollPane scrolll = new JScrollPane(tmessages);
+        //scrolll=new JScrollPane(tmessages);
+        scrolll.setSize(500,300);
+        scrolll.setLocation(100,100);
+        a.add(scrolll);
+        //a.add(tmessages);
 
         msgsend = new JButton("Send");
+        
         msgsend.setSize(100,30);
         msgsend.setLocation(500,450);
         a.add(msgsend);
         msgsend.addActionListener(this);
         
 
-        sendlabel = new JLabel("Send");
+        sendlabel = new JLabel("Your message");
+        sendlabel.setFont(font);
         sendlabel.setSize(300,30);
         sendlabel.setLocation(100,420);
         a.add(sendlabel);
