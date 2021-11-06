@@ -106,7 +106,7 @@ public class Client extends JFrame implements ActionListener
             closeEverything(socket,bufferReader,bufferWriter);
         }
         setTitle("Chat app");
-        setBounds(300,90,1000,600);
+        setBounds(300,90,800,600);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setResizable(false);
         a = getContentPane();
@@ -129,6 +129,7 @@ public class Client extends JFrame implements ActionListener
         msgsend.setLocation(500,450);
         a.add(msgsend);
         msgsend.addActionListener(this);
+        
 
         sendlabel = new JLabel("Send");
         sendlabel.setSize(300,30);
@@ -139,6 +140,7 @@ public class Client extends JFrame implements ActionListener
         sendmsg.setSize(400,30);
         sendmsg.setLocation(100,450);
         a.add(sendmsg);
+        //sendmsg.addKeyListener(msgsend);
             
         setVisible(true);  
     }
@@ -183,7 +185,7 @@ public class Client extends JFrame implements ActionListener
                    try
                    {
                        msgFromGroupChat = bufferReader.readLine();
-                       //System.out.println(msgFromGroupChat);
+                       System.out.println(msgFromGroupChat);
                        writemsg(msgFromGroupChat);
                    }
                    catch(IOException e)
@@ -225,7 +227,9 @@ public class Client extends JFrame implements ActionListener
 
     public void writemsg(String msg)
     {
-        tmessages.setText(tmessages.getText()+"\n" + msg); 
+        System.out.println(msg);
+        //tmessages.setText(tmessages.getText()+"\n" + msg); 
+        tmessages.append(msg+"\n");
     }
 
     public void actionPerformed(ActionEvent e)
@@ -233,7 +237,9 @@ public class Client extends JFrame implements ActionListener
         if(e.getSource()==msgsend)
         {
             String msg = sendmsg.getText();
-            sendMessage(msg);                
+            sendMessage(msg);
+            writemsg("you: "+msg);
+            sendmsg.setText(null);           
         }
     }
 
@@ -243,16 +249,13 @@ public class Client extends JFrame implements ActionListener
         {
             
             Socket socket = new Socket("localhost" , 5000);
-            //layout obj = new layout(socket);
             System.out.println("Enter your username for the chat: ");
             Scanner sc = new Scanner(System.in);
             String username;
             username = sc.nextLine();
-            //String username = obj.usernamestring;
             Client client = new Client(socket,username);
             System.out.println("Joined Chat-Room");
             client.listenForMessage();
-            //client.sendMessage();
             sc.close();
         }
         catch(Exception e)
@@ -263,6 +266,11 @@ public class Client extends JFrame implements ActionListener
         }
     }
 }
+
+
+
+
+
 
 /*class layout extends JFrame implements ActionListener
     {
