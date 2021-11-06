@@ -29,6 +29,10 @@ public class Client extends JFrame implements ActionListener
             this.bufferWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             this.bufferReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.username = username;   
+            bufferWriter.write(username);
+            bufferWriter.newLine();
+            bufferWriter.flush();
+
         }
         catch(IOException e)
         {
@@ -90,7 +94,7 @@ public class Client extends JFrame implements ActionListener
             //{
                 //clientlayout cl = new clientlayout();
                 String messageToSend = msg;
-                bufferWriter.write(username + ": " +messageToSend);
+                bufferWriter.write(messageToSend);
                 bufferWriter.newLine();
                 bufferWriter.flush();
             //}

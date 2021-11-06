@@ -25,7 +25,7 @@ public class ClientHandler implements Runnable
             this.bufferReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.clientUsername = bufferReader.readLine();
             clientHandlers.add(this);
-            broadcastMessage("SERVER: "+ clientUsername + "has entered the chat");
+            broadcastMessage("      "+clientUsername+" has entered the chat");
         }
         catch(IOException e)
         {
@@ -62,7 +62,7 @@ public class ClientHandler implements Runnable
             {
                 if(!clientHandler.clientUsername.equals(clientUsername))
                 {
-                    clientHandler.bufferWriter.write(messageToSend);
+                    clientHandler.bufferWriter.write(this.clientUsername+": "+messageToSend);
                     clientHandler.bufferWriter.newLine();
                     clientHandler.bufferWriter.flush();
                 }
