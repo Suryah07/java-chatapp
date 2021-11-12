@@ -1,10 +1,6 @@
 import java.net.ServerSocket;
 import java.io.IOException;
 import java.net.Socket;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-//import java.sql.Statement;
 
 
 public class Server
@@ -33,8 +29,7 @@ public class Server
         } 
         catch (IOException e) 
         {
-            System.out.println("Couldnt start server");
-            
+            System.out.println("Couldnt start server");    
         }
     }
 

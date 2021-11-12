@@ -62,11 +62,9 @@ public class Client extends JFrame implements ActionListener
         tmessages.setFont(tfont);
         tmessages.setEditable(false);
         JScrollPane scrolll = new JScrollPane(tmessages);
-        //scrolll=new JScrollPane(tmessages);
         scrolll.setSize(500,300);
         scrolll.setLocation(100,100);
         a.add(scrolll);
-        //a.add(tmessages);
 
         msgsend = new JButton("Send");
         
@@ -86,7 +84,6 @@ public class Client extends JFrame implements ActionListener
         sendmsg.setSize(400,30);
         sendmsg.setLocation(100,450);
         a.add(sendmsg);
-        //sendmsg.addKeyListener(msgsend);
             
         setVisible(true);  
     }
@@ -96,21 +93,10 @@ public class Client extends JFrame implements ActionListener
     {
         try
         {
-            
-            //bufferWriter.write(username);
-            //bufferWriter.newLine();
-            //bufferWriter.flush();
-
-            //Scanner sc = new Scanner(System.in);
-            //while(socket.isConnected())
-            //{
-                //clientlayout cl = new clientlayout();
-                String messageToSend = msg;
-                bufferWriter.write(messageToSend);
-                bufferWriter.newLine();
-                bufferWriter.flush();
-            //}
-            //sc.close();
+            String messageToSend = msg;
+            bufferWriter.write(messageToSend);
+            bufferWriter.newLine();
+            bufferWriter.flush();
         }
         catch(IOException e)
         {
@@ -131,7 +117,6 @@ public class Client extends JFrame implements ActionListener
                    try
                    {
                        msgFromGroupChat = bufferReader.readLine();
-                       //System.out.println(msgFromGroupChat);
                        writemsg(msgFromGroupChat);
                    }
                    catch(IOException e)
@@ -172,9 +157,7 @@ public class Client extends JFrame implements ActionListener
     }
 
     public void writemsg(String msg)
-    {
-        //System.out.println(msg);
-        //tmessages.setText(tmessages.getText()+"\n" + msg); 
+    { 
         tmessages.append(msg+"\n");
     }
 
@@ -185,7 +168,6 @@ public class Client extends JFrame implements ActionListener
             String msg = sendmsg.getText();
             sendMessage(msg);
             writemsg("you: "+msg);
-            //System.out.println(msg);
             sendmsg.setText(null);           
         }
     }
@@ -213,70 +195,3 @@ public class Client extends JFrame implements ActionListener
         }
     }
 }
-
-
-
-
-
-
-/*class layout extends JFrame implements ActionListener
-    {
-        Container c;
-        JLabel title;
-        JLabel username;
-        JTextField tusername;
-        JButton login;
-        public String usernamestring;
-        public String passwordstring;
-        Socket socket;
-
-
-        public layout(Socket s)
-        {
-            socket = s;
-            
-            setTitle("Chat app");
-            setBounds(300,90,1000,600);
-            setDefaultCloseOperation(EXIT_ON_CLOSE);
-            setResizable(false);
-            
-            c = getContentPane();
-            c.setVisible(true);
-            c.setLayout(null);
-
-            username = new JLabel("Username: ");
-            username.setSize(300,30);
-            username.setLocation(400,100);
-            c.add(username);
-
-            tusername = new JTextField();
-            tusername.setSize(300,30);
-            tusername.setLocation(500,100);
-            c.add(tusername);
-
-            login = new JButton("Login");
-            login.setSize(300,30);
-            login.setLocation(450,200);
-            c.add(login);
-            login.addActionListener(this);
-            
-            setVisible(true);
-            
-        }
-        public void actionPerformed(ActionEvent e)
-        {
-            if(e.getSource() == login)
-            {
-                usernamestring = tusername.getText();
-                System.out.println("Action");
-                this.dispose();
-                setVisible(false);
-                Client client = new Client(socket,usernamestring);
-                System.out.println("Joined Chat-Room");
-                client.listenForMessage();
-                client.sendMessage();
-                
-            }
-
-        }
-    }*/
