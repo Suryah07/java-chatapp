@@ -1,16 +1,16 @@
 import java.io.*;
 import java.net.Socket;
-import java.util.Scanner;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+
 
 public class Client extends JFrame implements ActionListener
 {
     private Socket socket;
     private BufferedReader bufferReader;
     private BufferedWriter bufferWriter;
-    private String username;
+    String username;
     Container a;
     JButton msgsend;
     JTextArea tmsgsend;
@@ -21,19 +21,40 @@ public class Client extends JFrame implements ActionListener
     String msg;
     Font font = new Font("Times New Roman", Font.PLAIN, 20);
     Font tfont = new Font("Times New Roman", Font.PLAIN, 18);
+
+
+
+    Container z;
+    JTextField tuname;
+    JLabel luname;
+    JButton buname;
     
 
-    public Client(Socket socket,String username)
+    public Client(Socket socket)
     {
         try
         {
+            
             this.socket = socket;
             this.bufferWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             this.bufferReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            this.username = username;   
+            getuname();
+            while(username == null)
+            {
+                try
+                {
+                    Thread.sleep(1000);
+                }
+                catch(Exception e)
+                {
+                    e.printStackTrace();
+                    System.out.println("Cant wait");
+                }
+            }
             bufferWriter.write(username);
             bufferWriter.newLine();
             bufferWriter.flush();
+            
 
         }
         catch(IOException e)
@@ -48,6 +69,7 @@ public class Client extends JFrame implements ActionListener
         a = getContentPane();
         a.setVisible(true);
         a.setLayout(null);
+        
 
 
         messages = new JLabel("Messages");
@@ -85,8 +107,47 @@ public class Client extends JFrame implements ActionListener
         sendmsg.setLocation(100,450);
         a.add(sendmsg);
             
-        setVisible(true);  
+        setVisible(true); 
+        a.repaint(); 
+        
     }
+
+    public void getuname()
+    {
+        
+        setTitle("User");
+        setBounds(300,90,800,600);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setResizable(false);
+        z = getContentPane();
+        z.setVisible(true);
+        z.setLayout(null);
+
+        luname = new JLabel("UserName");
+        luname.setFont(font);
+        luname.setSize(100,30);
+        luname.setLocation(100,150);
+        z.add(luname);
+
+        tuname = new JTextField();
+        tuname.setSize(300,30);
+        tuname.setLocation(210,150);
+        z.add(tuname);
+
+        buname = new JButton("Start chat");
+        buname.setSize(200,50);
+        buname.setLocation(500,450);
+        z.add(buname);
+        buname.addActionListener(this);
+
+
+
+
+        setVisible(true);
+
+
+    }
+
    
 
     public void sendMessage(String msg)
@@ -170,7 +231,18 @@ public class Client extends JFrame implements ActionListener
             writemsg("you: "+msg);
             sendmsg.setText(null);           
         }
+
+        if(e.getSource() == buname)
+        {
+            username = tuname.getText();
+            z.remove(luname);
+            z.remove(tuname);
+            z.remove(buname);
+            z.repaint();
+        }
+
     }
+
 
     public static void main(String args[])
     {
@@ -178,14 +250,9 @@ public class Client extends JFrame implements ActionListener
         {
             
             Socket socket = new Socket("localhost" , 5000);
-            System.out.println("Enter your username for the chat: ");
-            Scanner sc = new Scanner(System.in);
-            String username;
-            username = sc.nextLine();
-            Client client = new Client(socket,username);
-            System.out.println("Joined Chat-Room");
+            Client client = new Client(socket);
             client.listenForMessage();
-            sc.close();
+
         }
         catch(Exception e)
         {
@@ -193,5 +260,7 @@ public class Client extends JFrame implements ActionListener
             System.out.println("Coundnt Establish Connection with Server...");
             System.out.println("Exiting...");
         }
-    }
+    } 
+
 }
+
