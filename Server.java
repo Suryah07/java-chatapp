@@ -33,21 +33,6 @@ public class Server
         }
     }
 
-    public void closeServerSocket()
-    {
-        try
-        {
-            if(serverSocket != null)
-            {
-                serverSocket.close();
-            }
-        }
-        catch(IOException e)
-        {
-            e.printStackTrace();
-        }
-    }
-
     public static void main(String args[]) throws IOException
     {
         ServerSocket serverSocket = new ServerSocket(5000);

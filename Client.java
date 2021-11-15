@@ -11,6 +11,7 @@ public class Client extends JFrame implements ActionListener
     private BufferedReader bufferReader;
     private BufferedWriter bufferWriter;
     String username;
+    String password;
     Container a;
     JButton msgsend;
     JTextArea tmsgsend;
@@ -28,13 +29,14 @@ public class Client extends JFrame implements ActionListener
     JTextField tuname;
     JLabel luname;
     JButton buname;
+    JLabel lupass;
+    JPasswordField tupass;
     
 
     public Client(Socket socket)
     {
         try
-        {
-            
+        {           
             this.socket = socket;
             this.bufferWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             this.bufferReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -53,9 +55,9 @@ public class Client extends JFrame implements ActionListener
             }
             bufferWriter.write(username);
             bufferWriter.newLine();
+            bufferWriter.write(password);
+            bufferWriter.newLine();
             bufferWriter.flush();
-            
-
         }
         catch(IOException e)
         {
@@ -140,8 +142,16 @@ public class Client extends JFrame implements ActionListener
         z.add(buname);
         buname.addActionListener(this);
 
+        lupass = new JLabel("Password");
+        lupass.setFont(font);
+        lupass.setSize(100,30);
+        lupass.setLocation(100,190);
+        z.add(lupass);
 
-
+        tupass = new JPasswordField();
+        tupass.setSize(300,30);
+        tupass.setLocation(210,190);
+        z.add(tupass);
 
         setVisible(true);
 
@@ -228,16 +238,20 @@ public class Client extends JFrame implements ActionListener
         {
             String msg = sendmsg.getText();
             sendMessage(msg);
-            writemsg("you: "+msg);
+            writemsg("You: "+msg);
             sendmsg.setText(null);           
         }
 
         if(e.getSource() == buname)
         {
             username = tuname.getText();
+            password = tupass.getText();
+            System.out.println(password);
             z.remove(luname);
             z.remove(tuname);
             z.remove(buname);
+            z.remove(tupass);
+            z.remove(lupass);
             z.repaint();
         }
 

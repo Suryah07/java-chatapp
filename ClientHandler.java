@@ -4,6 +4,12 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.OutputStreamWriter;
 import java.io.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 
 public class ClientHandler implements Runnable
@@ -15,6 +21,7 @@ public class ClientHandler implements Runnable
     private BufferedReader bufferReader;
     private BufferedWriter bufferWriter;
     private String clientUsername;
+    private String clientPassword;
 
     public ClientHandler(Socket socket)
     {
@@ -24,12 +31,27 @@ public class ClientHandler implements Runnable
             this.bufferWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             this.bufferReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.clientUsername = bufferReader.readLine();
-            clientHandlers.add(this);
-            broadcastMessage(" has entered the chat");
+            this.clientPassword = bufferReader.readLine();
+            checkuser(clientUsername, clientPassword);
+            if(checkuser(clientUsername, clientPassword)=="True")
+            {              
+                this.bufferWriter.write("Allow login");
+                this.bufferWriter.newLine();
+                this.bufferWriter.flush();
+                clientHandlers.add(this);
+                broadcastMessage(" has entered the chat");
+            }
+            else
+            {
+                this.bufferWriter.write(clientUsername+"sdfsdf"+clientPassword);
+                this.bufferWriter.newLine();
+                this.bufferWriter.flush();
+            }
         }
         catch(IOException e)
         {
             closeEverything(socket,bufferReader,bufferWriter);
+            
         }
     }
 
@@ -104,5 +126,45 @@ public class ClientHandler implements Runnable
         {
             e.printStackTrace();
         }
+    }
+
+    public String checkuser(String name,String pass)
+    {
+        int count = 0;
+        try
+        {   
+            
+            Connection con = DriverManager.getConnection("jdbc:derby:users;create=true");
+            String sql="SELECT * FROM users";
+            
+            Statement st = con.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            while(rs.next())
+            {
+                String uname = rs.getString("name");               
+                String upass = rs.getString("pass");
+                if(name .equals(uname))
+                {
+                    
+                    if(pass.equals(upass))
+                    {
+                        count = count+1;                        
+                    }
+                }
+            }
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        if(count>0)
+        {
+            return "True";
+        }
+        else
+        {
+            return "False";
+        }
+           
     }
 }
