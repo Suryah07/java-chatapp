@@ -7,11 +7,13 @@ import java.awt.event.*;
 
 public class Client extends JFrame implements ActionListener
 {
+    private String newuser = "dlshskjhdkhskfiuwfwie6f7wyeffw8fw7fyw8yfe";
     private Socket socket;
     private BufferedReader bufferReader;
     private BufferedWriter bufferWriter;
     String username;
     String password;
+    String rollno;
     Container a;
     JButton msgsend;
     JTextArea tmsgsend;
@@ -31,6 +33,12 @@ public class Client extends JFrame implements ActionListener
     JButton buname;
     JLabel lupass;
     JPasswordField tupass;
+    JButton newusr;
+    JButton createusr;
+    JTextField turoll;
+    JLabel luroll;
+    JButton subdetails;
+
     
 
     public Client(Socket socket)
@@ -155,10 +163,31 @@ public class Client extends JFrame implements ActionListener
 
         setVisible(true);
 
+        luroll = new JLabel("Roll-no");
+        luroll.setFont(font);
+        luroll.setEnabled(false);
+        luroll.setSize(100,30);
+        luroll.setLocation(100,240);
+        z.add(luroll);
+        
+        turoll = new JTextField();
+        turoll.setSize(300,30);
+        turoll.setEnabled(false);
+        turoll.setLocation(210,240);
+        z.add(turoll);
 
+        createusr = new JButton("New user");
+        createusr.setSize(200,50);
+        createusr.setLocation(250,450);
+        z.add(createusr);
+        createusr.addActionListener(this);
+
+        subdetails = new JButton("Submit details");
+        subdetails.setSize(200,50);
+        subdetails.setLocation(250,450);
+        //z.add(subdetails);
+        subdetails.addActionListener(this);
     }
-
-   
 
     public void sendMessage(String msg)
     {
@@ -247,17 +276,47 @@ public class Client extends JFrame implements ActionListener
             username = tuname.getText();
             password = tupass.getText();
             System.out.println(password);
-            z.remove(luname);
-            z.remove(tuname);
+            z.removeAll();
+            z.repaint();
+        }
+
+        if(e.getSource() == createusr)
+        {
+            luroll.setEnabled(true);
+            turoll.setEnabled(true);
+            createusr.setText("Submit details");
+            z.remove(createusr);
+            z.add(subdetails);
             z.remove(buname);
-            z.remove(tupass);
-            z.remove(lupass);
+            z.repaint();
+            
+        }
+        if(e.getSource() == subdetails)
+        {
+            username = tuname.getText();
+            password = tupass.getText();
+            rollno = turoll.getText();
+            try
+            {
+                bufferWriter.write(newuser);
+                bufferWriter.newLine();
+                bufferWriter.write(username);
+                bufferWriter.newLine();
+                bufferWriter.write(password);
+                bufferWriter.newLine();
+                bufferWriter.write(rollno);
+                bufferWriter.newLine();
+                bufferWriter.flush();    
+            }
+            catch(Exception u)
+            {
+                System.out.println("Unable to add user");
+            }
+            z.removeAll();
             z.repaint();
         }
 
     }
-
-
     public static void main(String args[])
     {
         try
@@ -275,6 +334,4 @@ public class Client extends JFrame implements ActionListener
             System.out.println("Exiting...");
         }
     } 
-
 }
-
