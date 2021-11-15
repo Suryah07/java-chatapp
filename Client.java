@@ -8,6 +8,10 @@ import java.awt.event.*;
 public class Client extends JFrame implements ActionListener
 {
     private String newuser = "dlshskjhdkhskfiuwfwie6f7wyeffw8fw7fyw8yfe";
+    private String broadcaststring = "kljfldkfgge6r78g68g76er7ggeg87erwe67sdvx687bg7r7jy/8";
+    private String authorisechat = "jdshfkdjfhskuhfkdjfh564dfg65s4fb5d4bd6b@873gbdjkhkjf";
+
+
     private Socket socket;
     private BufferedReader bufferReader;
     private BufferedWriter bufferWriter;
@@ -24,8 +28,6 @@ public class Client extends JFrame implements ActionListener
     String msg;
     Font font = new Font("Times New Roman", Font.PLAIN, 20);
     Font tfont = new Font("Times New Roman", Font.PLAIN, 18);
-
-
 
     Container z;
     JTextField tuname;
@@ -61,66 +63,69 @@ public class Client extends JFrame implements ActionListener
                     System.out.println("Cant wait");
                 }
             }
-            bufferWriter.write(username);
-            bufferWriter.newLine();
-            bufferWriter.write(password);
-            bufferWriter.newLine();
-            bufferWriter.flush();
+            chatnow();
         }
         catch(IOException e)
         {
             System.out.println("Client client closing everytjing");
             closeEverything(socket,bufferReader,bufferWriter);
         }
-        setTitle("Chat app");
-        setBounds(300,90,800,600);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setResizable(false);
-        a = getContentPane();
-        a.setVisible(true);
-        a.setLayout(null);
-        
-
-
-        messages = new JLabel("Messages");
-        messages.setFont(font);
-        messages.setSize(300,30);
-        messages.setLocation(100,55);
-        a.add(messages);
-
-        tmessages = new JTextArea();
-        tmessages.setSize(500,300);
-        tmessages.setLocation(100,100);
-        tmessages.setFont(tfont);
-        tmessages.setEditable(false);
-        JScrollPane scrolll = new JScrollPane(tmessages);
-        scrolll.setSize(500,300);
-        scrolll.setLocation(100,100);
-        a.add(scrolll);
-
-        msgsend = new JButton("Send");
-        
-        msgsend.setSize(100,30);
-        msgsend.setLocation(500,450);
-        a.add(msgsend);
-        msgsend.addActionListener(this);
-        
-
-        sendlabel = new JLabel("Your message");
-        sendlabel.setFont(font);
-        sendlabel.setSize(300,30);
-        sendlabel.setLocation(100,420);
-        a.add(sendlabel);
-
-        sendmsg = new JTextField();
-        sendmsg.setSize(400,30);
-        sendmsg.setLocation(100,450);
-        a.add(sendmsg);
-            
-        setVisible(true); 
-        a.repaint(); 
-        
     }
+
+
+
+    public void chatnow()
+    {
+            setTitle("Chat app");
+            setBounds(300,90,800,600);
+            setDefaultCloseOperation(EXIT_ON_CLOSE);
+            setResizable(false);
+            a = getContentPane();
+            a.setVisible(true);
+            a.setLayout(null);
+            
+
+
+            messages = new JLabel("Messages");
+            messages.setFont(font);
+            messages.setSize(300,30);
+            messages.setLocation(100,55);
+            a.add(messages);
+
+            tmessages = new JTextArea("Welcome to chat room\n");
+            tmessages.setSize(500,300);
+            tmessages.setLocation(100,100);
+            tmessages.setFont(tfont);
+            tmessages.setEditable(false);
+            JScrollPane scrolll = new JScrollPane(tmessages);
+            scrolll.setSize(500,300);
+            scrolll.setLocation(100,100);
+            a.add(scrolll);
+
+            msgsend = new JButton("Send");
+            
+            msgsend.setSize(100,30);
+            msgsend.setLocation(500,450);
+            a.add(msgsend);
+            msgsend.addActionListener(this);
+            
+
+            sendlabel = new JLabel("Your message");
+            sendlabel.setFont(font);
+            sendlabel.setSize(300,30);
+            sendlabel.setLocation(100,420);
+            a.add(sendlabel);
+
+            sendmsg = new JTextField();
+            sendmsg.setSize(400,30);
+            sendmsg.setLocation(100,450);
+            a.add(sendmsg);
+                
+            setVisible(true); 
+    }
+
+
+
 
     public void getuname()
     {
@@ -189,11 +194,16 @@ public class Client extends JFrame implements ActionListener
         subdetails.addActionListener(this);
     }
 
+
+
+
     public void sendMessage(String msg)
     {
         try
         {
             String messageToSend = msg;
+            bufferWriter.write(broadcaststring);
+            bufferWriter.newLine();
             bufferWriter.write(messageToSend);
             bufferWriter.newLine();
             bufferWriter.flush();
@@ -207,7 +217,8 @@ public class Client extends JFrame implements ActionListener
 
     public void listenForMessage()
     {
-       new Thread(new Runnable() {
+       new Thread(new Runnable() 
+       {
            @Override
            public void run()
            {
@@ -216,7 +227,12 @@ public class Client extends JFrame implements ActionListener
                {
                    try
                    {
+                       
                        msgFromGroupChat = bufferReader.readLine();
+                       if(msgFromGroupChat.equals(authorisechat))
+                       {
+                           continue;
+                       }
                        writemsg(msgFromGroupChat);
                    }
                    catch(IOException e)
@@ -273,11 +289,37 @@ public class Client extends JFrame implements ActionListener
 
         if(e.getSource() == buname)
         {
-            username = tuname.getText();
-            password = tupass.getText();
             System.out.println(password);
-            z.removeAll();
-            z.repaint();
+            
+            try
+            {
+                String ua = tuname.getText();
+                String pa = tupass.getText();
+                bufferWriter.write(ua);
+                bufferWriter.newLine();
+                bufferWriter.write(pa);
+                bufferWriter.newLine();
+                bufferWriter.flush();
+                String response = bufferReader.readLine();
+                if(response.equals(authorisechat))
+                {
+                    username = tuname.getText();
+                    password = tupass.getText();
+                    z.removeAll();
+                    z.repaint();
+                }
+                else
+                {
+                    JOptionPane.showMessageDialog(this,"Check your credentials");
+                    System.out.println(response);
+                }
+                
+            }
+            catch(Exception g)
+            {
+                g.printStackTrace();
+                System.out.println("Unable to login");
+            }
         }
 
         if(e.getSource() == createusr)
@@ -315,7 +357,6 @@ public class Client extends JFrame implements ActionListener
             z.removeAll();
             z.repaint();
         }
-
     }
     public static void main(String args[])
     {

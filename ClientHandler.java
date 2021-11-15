@@ -11,7 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 
-public class ClientHandler implements Runnable
+public class ClientHandler 
 {
 
     public static ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
@@ -22,70 +22,92 @@ public class ClientHandler implements Runnable
     private String clientUsername;
     private String clientPassword;
     private String newuser = "dlshskjhdkhskfiuwfwie6f7wyeffw8fw7fyw8yfe";
+    private String broadcaststring = "kljfldkfgge6r78g68g76er7ggeg87erwe67sdvx687bg7r7jy/8";
+    private String authorisechat = "jdshfkdjfhskuhfkdjfh564dfg65s4fb5d4bd6b@873gbdjkhkjf";
+    boolean login = false;
 
     public ClientHandler(Socket socket)
     {
         try
         {
-            createtable();
-            this.socket = socket;
-            this.bufferWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-            this.bufferReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            this.clientUsername = bufferReader.readLine();
-            this.clientPassword = bufferReader.readLine();
-
-            if(clientUsername.equals(newuser))
+            while(!login)
             {
-                String nm = clientPassword;
-                String pas = bufferReader.readLine();
-                String rolno = bufferReader.readLine();
-                adduser(nm, pas,rolno);
-                this.clientUsername = nm;
-                this.clientPassword = pas;
-            }
+                createtable();
+                this.socket = socket;
+                this.bufferWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+                this.bufferReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                this.clientUsername = bufferReader.readLine();
+                this.clientPassword = bufferReader.readLine();
 
-            checkuser(clientUsername, clientPassword);
-            if(checkuser(clientUsername, clientPassword)=="True")
-            {              
-                this.bufferWriter.write("Welcome to chat-room");
-                this.bufferWriter.newLine();
-                this.bufferWriter.flush();
-                clientHandlers.add(this);
-                broadcastMessage(" has entered the chat");
-            }
-            else
-            {
-                this.bufferWriter.write("You are not authorised to chat");
-                this.bufferWriter.newLine();
-                this.bufferWriter.flush();
+                if(clientUsername.equals(newuser))
+                {
+                    String nm = clientPassword;
+                    String pas = bufferReader.readLine();
+                    String rolno = bufferReader.readLine();
+                    adduser(nm, pas,rolno);
+                    this.clientUsername = nm;
+                    this.clientPassword = pas;
+                    
+                }
+
+                if(checkuser(clientUsername, clientPassword)=="True")
+                {              
+                    this.bufferWriter.write(authorisechat);
+                    this.bufferWriter.newLine();
+                    this.bufferWriter.flush();
+                    clientHandlers.add(this);
+                    broadcastMessage(" has entered the chat");
+                    login = true;
+                    getinput();
+                }
+                else
+                {
+                    this.bufferWriter.write("You are not authorised to chat");
+                    this.bufferWriter.newLine();
+                    this.bufferWriter.flush();
+                    //closeEverything(socket, bufferReader, bufferWriter);
+                }
             }
         }
         catch(IOException e)
         {
+            e.printStackTrace();
             closeEverything(socket,bufferReader,bufferWriter);
             
         }
     }
 
-    @Override
-    public void run()
+    public void getinput()
     {
-        String messageFromClient;
-        
-        while(socket.isConnected())
+        new Thread(new Runnable()
         {
-            try
-            {
-                messageFromClient = bufferReader.readLine();
-                broadcastMessage(messageFromClient);
-            }
-            catch(IOException e)
-            {
-                closeEverything(socket,bufferReader,bufferWriter);
-                break;
-            }
 
-        }
+            @Override
+            public void run()
+            {
+                String messageFromClient;
+                while(socket.isConnected())
+                {
+                    try
+                    {
+                        String header = bufferReader.readLine();
+                        if(header.equals(broadcaststring))
+                        {
+                            messageFromClient = bufferReader.readLine();                    
+                            broadcastMessage(messageFromClient);
+                        }
+                            
+                    }
+                    catch(IOException e)
+                    {
+                        e.printStackTrace();
+                        closeEverything(socket,bufferReader,bufferWriter);
+                        break;
+                    }
+
+                }
+            }
+        }).start();
     }
 
     public void broadcastMessage(String messageToSend)
@@ -103,6 +125,7 @@ public class ClientHandler implements Runnable
             }
             catch(IOException e)
             {
+                e.printStackTrace();
                 closeEverything(socket,bufferReader,bufferWriter);
             }    
         }
@@ -144,11 +167,10 @@ public class ClientHandler implements Runnable
     {
         try
         {
-            int rol = Integer.parseInt(rollno);
             Connection con = DriverManager.getConnection("jdbc:derby:users;create=true");
             PreparedStatement ps = con.prepareStatement("Insert into users values(?,?,?)");
             ps.setString(1,name);
-            ps.setInt(2,rol);
+            ps.setString(2,rollno);
             ps.setString(3,pass);
             ps.executeUpdate();
             con.commit();
@@ -204,9 +226,9 @@ public class ClientHandler implements Runnable
     {
         try
         {
-            Connection con = DriverManager.getConnection("jdbc:derby:users;create=true"); 
+            Connection con = DriverManager.getConnection("jdbc:derby:users;create=true");
             Statement st = con.createStatement();
-            st.executeUpdate("Create table users(name varchar(30),rollno int,pass varchar(30))");
+            st.executeUpdate("Create table users(name varchar(30),rollno varchar(10),pass varchar(30))");
             System.out.println("dbCreated");
             System.out.println("tableCreated");
         }
