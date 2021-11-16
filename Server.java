@@ -26,7 +26,6 @@ public class Server
         } 
         catch (IOException e) 
         {
-            e.printStackTrace();
             System.out.println("Couldnt start server");    
         }
     }

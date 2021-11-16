@@ -1,6 +1,7 @@
 import java.io.*;
 import java.net.Socket;
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.*;
 
@@ -26,6 +27,7 @@ public class Client extends JFrame implements ActionListener
     JTextField sendmsg;
     JLabel sendlabel;
     String msg;
+    JButton close;
     Font font = new Font("Times New Roman", Font.PLAIN, 20);
     Font tfont = new Font("Times New Roman", Font.PLAIN, 18);
 
@@ -108,6 +110,13 @@ public class Client extends JFrame implements ActionListener
             msgsend.setLocation(500,450);
             a.add(msgsend);
             msgsend.addActionListener(this);
+
+            /*close = new JButton("Exit");
+            
+            close.setSize(100,30);
+            close.setLocation(600,450);
+            a.add(close);
+            close.addActionListener(this);*/
             
 
             sendlabel = new JLabel("Your message");
@@ -170,16 +179,13 @@ public class Client extends JFrame implements ActionListener
 
         luroll = new JLabel("Roll-no");
         luroll.setFont(font);
-        luroll.setEnabled(false);
         luroll.setSize(100,30);
         luroll.setLocation(100,240);
-        z.add(luroll);
         
         turoll = new JTextField();
         turoll.setSize(300,30);
-        turoll.setEnabled(false);
         turoll.setLocation(210,240);
-        z.add(turoll);
+        
 
         createusr = new JButton("New user");
         createusr.setSize(200,50);
@@ -289,7 +295,6 @@ public class Client extends JFrame implements ActionListener
 
         if(e.getSource() == buname)
         {
-            System.out.println(password);
             
             try
             {
@@ -324,8 +329,8 @@ public class Client extends JFrame implements ActionListener
 
         if(e.getSource() == createusr)
         {
-            luroll.setEnabled(true);
-            turoll.setEnabled(true);
+            z.add(luroll);
+            z.add(turoll);
             createusr.setText("Submit details");
             z.remove(createusr);
             z.add(subdetails);
@@ -374,5 +379,5 @@ public class Client extends JFrame implements ActionListener
             System.out.println("Coundnt Establish Connection with Server...");
             System.out.println("Exiting...");
         }
-    } 
+    }
 }

@@ -24,6 +24,7 @@ public class ClientHandler
     private String newuser = "dlshskjhdkhskfiuwfwie6f7wyeffw8fw7fyw8yfe";
     private String broadcaststring = "kljfldkfgge6r78g68g76er7ggeg87erwe67sdvx687bg7r7jy/8";
     private String authorisechat = "jdshfkdjfhskuhfkdjfh564dfg65s4fb5d4bd6b@873gbdjkhkjf";
+    
     boolean login = false;
 
     public ClientHandler(Socket socket)
@@ -79,35 +80,43 @@ public class ClientHandler
 
     public void getinput()
     {
-        new Thread(new Runnable()
+        try
         {
-
-            @Override
-            public void run()
+            new Thread(new Runnable()
             {
-                String messageFromClient;
-                while(socket.isConnected())
-                {
-                    try
-                    {
-                        String header = bufferReader.readLine();
-                        if(header.equals(broadcaststring))
-                        {
-                            messageFromClient = bufferReader.readLine();                    
-                            broadcastMessage(messageFromClient);
-                        }
-                            
-                    }
-                    catch(IOException e)
-                    {
-                        e.printStackTrace();
-                        closeEverything(socket,bufferReader,bufferWriter);
-                        break;
-                    }
 
+                @Override
+                public void run()
+                {
+                    String messageFromClient;
+                    while(socket.isConnected())
+                    {
+                        try
+                        {
+                            String header = bufferReader.readLine();
+                            if(header.equals(broadcaststring))
+                            {
+                                messageFromClient = bufferReader.readLine();                    
+                                broadcastMessage(messageFromClient);
+                            }
+                                
+                        }
+                        catch(IOException e)
+                        {
+                            System.out.println("A Client exited");
+                            closeEverything(socket,bufferReader,bufferWriter);
+                            break;
+                        }
+
+                    }
                 }
-            }
-        }).start();
+            }).start();
+        }
+        catch(Exception e)
+        {
+            closeEverything(socket, bufferReader, bufferWriter);
+            System.out.println("Client exited");
+        }
     }
 
     public void broadcastMessage(String messageToSend)
