@@ -15,7 +15,6 @@ public class ClientHandler
 {
 
     public static ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
-
     private Socket socket;
     private BufferedReader bufferReader;
     private BufferedWriter bufferWriter;
@@ -24,7 +23,6 @@ public class ClientHandler
     private String newuser = "dlshskjhdkhskfiuwfwie6f7wyeffw8fw7fyw8yfe";
     private String broadcaststring = "kljfldkfgge6r78g68g76er7ggeg87erwe67sdvx687bg7r7jy/8";
     private String authorisechat = "jdshfkdjfhskuhfkdjfh564dfg65s4fb5d4bd6b@873gbdjkhkjf";
-    
     boolean login = false;
 
     public ClientHandler(Socket socket)
@@ -45,10 +43,11 @@ public class ClientHandler
                     String nm = clientPassword;
                     String pas = bufferReader.readLine();
                     String rolno = bufferReader.readLine();
-                    adduser(nm, pas,rolno);
+                    String depart = bufferReader.readLine();
+                    adduser(nm, pas,rolno,depart);
                     this.clientUsername = nm;
-                    this.clientPassword = pas;
-                    
+                    this.clientPassword = pas; 
+                    login = true;
                 }
 
                 if(checkuser(clientUsername, clientPassword)=="True")
@@ -72,9 +71,7 @@ public class ClientHandler
         }
         catch(IOException e)
         {
-            e.printStackTrace();
-            closeEverything(socket,bufferReader,bufferWriter);
-            
+            closeEverything(socket,bufferReader,bufferWriter);   
         }
     }
 
@@ -82,9 +79,9 @@ public class ClientHandler
     {
         try
         {
-            new Thread(new Runnable()
+            new Thread(
+                new Runnable()
             {
-
                 @Override
                 public void run()
                 {
@@ -98,8 +95,7 @@ public class ClientHandler
                             {
                                 messageFromClient = bufferReader.readLine();                    
                                 broadcastMessage(messageFromClient);
-                            }
-                                
+                            }            
                         }
                         catch(IOException e)
                         {
@@ -134,7 +130,6 @@ public class ClientHandler
             }
             catch(IOException e)
             {
-                e.printStackTrace();
                 closeEverything(socket,bufferReader,bufferWriter);
             }    
         }
@@ -150,7 +145,6 @@ public class ClientHandler
     public void closeEverything(Socket socket,BufferedReader bufferReader,BufferedWriter bufferWriter)
     {
         removeClientHandler();
-        
         try
         {
             if(bufferReader != null)
@@ -168,27 +162,28 @@ public class ClientHandler
         }
         catch(IOException e)
         {
-            e.printStackTrace();
+        
         }
     }
 
-    public void adduser(String name,String pass,String rollno)
+    public void adduser(String name,String pass,String rollno,String department)
     {
         try
         {
             Connection con = DriverManager.getConnection("jdbc:derby:users;create=true");
-            PreparedStatement ps = con.prepareStatement("Insert into users values(?,?,?)");
+            PreparedStatement ps = con.prepareStatement("Insert into users values(?,?,?,?)");
             ps.setString(1,name);
             ps.setString(2,rollno);
             ps.setString(3,pass);
+            ps.setString(4,department);
             ps.executeUpdate();
             con.commit();
             con.close();
         }
         catch(Exception e)
         {
-            System.out.println("Unable to add user");
             e.printStackTrace();
+            System.out.println("Unable to add user");
         }
     }
 
@@ -219,7 +214,7 @@ public class ClientHandler
         }
         catch(Exception e)
         {
-            e.printStackTrace();
+            
         }
         if(count>0)
         {
@@ -237,9 +232,11 @@ public class ClientHandler
         {
             Connection con = DriverManager.getConnection("jdbc:derby:users;create=true");
             Statement st = con.createStatement();
-            st.executeUpdate("Create table users(name varchar(30),rollno varchar(10),pass varchar(30))");
+            st.executeUpdate("Create table users(name varchar(30),rollno varchar(10),pass varchar(30),department varchar(30))");
             System.out.println("dbCreated");
             System.out.println("tableCreated");
+            con.commit();
+            con.close();
         }
         catch(Exception v)
         {

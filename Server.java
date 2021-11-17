@@ -29,7 +29,6 @@ public class Server
             System.out.println("Couldnt start server");    
         }
     }
-
     public static void main(String args[]) throws IOException
     {
         ServerSocket serverSocket = new ServerSocket(5000);

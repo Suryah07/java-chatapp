@@ -19,6 +19,7 @@ public class Client extends JFrame implements ActionListener
     String username;
     String password;
     String rollno;
+    String depart;
     Container a;
     JButton msgsend;
     JTextArea tmsgsend;
@@ -42,6 +43,8 @@ public class Client extends JFrame implements ActionListener
     JTextField turoll;
     JLabel luroll;
     JButton subdetails;
+    JLabel ludepartment;
+    JTextField tudepartment;
 
     
 
@@ -61,7 +64,6 @@ public class Client extends JFrame implements ActionListener
                 }
                 catch(Exception e)
                 {
-                    e.printStackTrace();
                     System.out.println("Cant wait");
                 }
             }
@@ -69,7 +71,7 @@ public class Client extends JFrame implements ActionListener
         }
         catch(IOException e)
         {
-            System.out.println("Client client closing everytjing");
+            System.out.println("Client closing everytjing");
             closeEverything(socket,bufferReader,bufferWriter);
         }
     }
@@ -85,8 +87,6 @@ public class Client extends JFrame implements ActionListener
             a = getContentPane();
             a.setVisible(true);
             a.setLayout(null);
-            
-
 
             messages = new JLabel("Messages");
             messages.setFont(font);
@@ -109,15 +109,7 @@ public class Client extends JFrame implements ActionListener
             msgsend.setSize(100,30);
             msgsend.setLocation(500,450);
             a.add(msgsend);
-            msgsend.addActionListener(this);
-
-            /*close = new JButton("Exit");
-            
-            close.setSize(100,30);
-            close.setLocation(600,450);
-            a.add(close);
-            close.addActionListener(this);*/
-            
+            msgsend.addActionListener(this);         
 
             sendlabel = new JLabel("Your message");
             sendlabel.setFont(font);
@@ -132,9 +124,6 @@ public class Client extends JFrame implements ActionListener
                 
             setVisible(true); 
     }
-
-
-
 
     public void getuname()
     {
@@ -185,6 +174,15 @@ public class Client extends JFrame implements ActionListener
         turoll = new JTextField();
         turoll.setSize(300,30);
         turoll.setLocation(210,240);
+
+        ludepartment = new JLabel("Department");
+        ludepartment.setFont(font);
+        ludepartment.setSize(100,30);
+        ludepartment.setLocation(100,290);
+        
+        tudepartment = new JTextField();
+        tudepartment.setSize(300,30);
+        tudepartment.setLocation(210,290);
         
 
         createusr = new JButton("New user");
@@ -196,12 +194,8 @@ public class Client extends JFrame implements ActionListener
         subdetails = new JButton("Submit details");
         subdetails.setSize(200,50);
         subdetails.setLocation(250,450);
-        //z.add(subdetails);
         subdetails.addActionListener(this);
     }
-
-
-
 
     public void sendMessage(String msg)
     {
@@ -272,7 +266,7 @@ public class Client extends JFrame implements ActionListener
         }
         catch(IOException e)
         {
-            e.printStackTrace();
+            System.out.println("Unable to close all");
         }
 
         
@@ -316,13 +310,11 @@ public class Client extends JFrame implements ActionListener
                 else
                 {
                     JOptionPane.showMessageDialog(this,"Check your credentials");
-                    System.out.println(response);
                 }
                 
             }
             catch(Exception g)
             {
-                g.printStackTrace();
                 System.out.println("Unable to login");
             }
         }
@@ -331,6 +323,8 @@ public class Client extends JFrame implements ActionListener
         {
             z.add(luroll);
             z.add(turoll);
+            z.add(tudepartment);
+            z.add(ludepartment);
             createusr.setText("Submit details");
             z.remove(createusr);
             z.add(subdetails);
@@ -340,6 +334,7 @@ public class Client extends JFrame implements ActionListener
         }
         if(e.getSource() == subdetails)
         {
+            depart = tudepartment.getText();
             username = tuname.getText();
             password = tupass.getText();
             rollno = turoll.getText();
@@ -352,6 +347,8 @@ public class Client extends JFrame implements ActionListener
                 bufferWriter.write(password);
                 bufferWriter.newLine();
                 bufferWriter.write(rollno);
+                bufferWriter.newLine();
+                bufferWriter.write(depart);
                 bufferWriter.newLine();
                 bufferWriter.flush();    
             }
