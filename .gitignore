@@ -4,3 +4,4 @@ aabb
 Server.class
 ClientHandler$1.class
 ClientHandler.class
+*.class
